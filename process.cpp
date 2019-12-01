@@ -36,8 +36,6 @@ Mat cut(Mat &img)
 			}
 		}
 	}
-	//printf("cut down !\n");
-	//printf("left = %d up = %d right = %d down = %d\n", left, up, right, down);
 	Rect rect(left,	up, right - left, down - up); //創一個矩形，(左上角x，左上角y，寬度，高度)
 	Mat image = Mat(img, rect);
 
@@ -45,21 +43,21 @@ Mat cut(Mat &img)
 }
 
 Mat process(Mat &img) {          //主要引用的函式
-	Mat result, gray_img, t_img, open_img, cut_img;
+	Mat cut_img;
 
 	//cvtColor(img, gray_img, COLOR_BGR2GRAY);//灰階
-
-	//threshold(gray_img, t_img, 100, 255, 1);//黑字
 
 	//Mat element = getStructuringElement(MORPH_RECT, Size(15, 15));//自定義核
 
 	//morphologyEx(t_img, open_img, MORPH_OPEN, element);//開運算消雜質
 
-	cut_img = cut(img);//切下數字	// Error happens here !
+	cut_img = cut(img);//切下數字
 
 	Mat resize_img(28, 28, cut_img.type());//範本尺寸為28*28
 
 	resize(cut_img, resize_img, resize_img.size(), 0, 0, INTER_LINEAR);//縮放大小
+
+	threshold(resize_img, resize_img, 128, 255, CV_THRESH_BINARY);
 
 	return resize_img;
 }
