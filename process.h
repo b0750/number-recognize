@@ -1,9 +1,9 @@
 #include <opencv2/opencv.hpp>
 #include <iostream>
-#define train_pictures_per_number 50	// Number of pictures we want for a given number in train_data.
-#define test_pictures_per_number 1 // Number of pictures we want for a given number in test_data.
+#define train_pictures_per_number 1000	// Number of pictures we want for a given number in train_data.
+#define test_pictures_per_number 100 // Number of pictures we want for a given number in test_data.
 #define INF 1000000007
-#define K_value 5	// Find the K-nearest neighbor.
+#define K_value 11	// Find the K-nearest neighbor.
 
 using namespace cv;
 using namespace std;
