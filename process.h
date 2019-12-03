@@ -21,3 +21,5 @@ int read_train_data(Num_data data[]);
 int predict(Mat &image, Num_data data[], int train_data_count);
 long long int find_distance(Mat &img1, Mat &img2);
 void print_img(Mat &img);
+void Test(Num_data data[], int train_data_count);
+int load_model(Num_data data[]);
