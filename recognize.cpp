@@ -21,7 +21,7 @@ int main()
 
 		char pathname[20] = {};
 
-		sprintf(pathname, "./play/%d.jpg", 1); //Change the pathname wherever you want to save your test picture.
+		sprintf(pathname, "./play/%d.jpg", 1);
 
 		Mat image = imread(pathname, 0);
 		if ( !image.data ) {
