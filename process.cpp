@@ -3,10 +3,24 @@
 #include <queue>
 #include <vector>
 #include <math.h>
+#include <assert.h>
 #include "process.h"
 
 using namespace cv;
 using namespace std;
+
+int load_model(Num_data data[])
+{
+	for (int i = 0; i < 10 * train_pictures_per_number; i++) {
+		Mat img;
+		char pathname[30] = {};
+		sprintf(pathname, "./train_model/%d_%d.jpg", (i / train_pictures_per_number), i);
+		img = imread(pathname, 0);
+		data[i].number = (i / train_pictures_per_number);
+		data[i].picture = img;
+	}
+	return 10 * train_pictures_per_number;
+}
 
 Mat cut(Mat &img)
 {
@@ -36,13 +50,15 @@ Mat cut(Mat &img)
 			}
 		}
 	}
+
 	Rect rect(left,	up, right - left, down - up); //創一個矩形，(左上角x，左上角y，寬度，高度)
 	Mat image = Mat(img, rect);
 
 	return image;
 }
 
-Mat process(Mat &img) {          //主要引用的函式
+Mat process(Mat &img) 
+{
 	Mat cut_img;
 
 	//cvtColor(img, gray_img, COLOR_BGR2GRAY);//灰階
@@ -50,6 +66,8 @@ Mat process(Mat &img) {          //主要引用的函式
 	//Mat element = getStructuringElement(MORPH_RECT, Size(15, 15));//自定義核
 
 	//morphologyEx(t_img, open_img, MORPH_OPEN, element);//開運算消雜質
+
+	threshold(img, img, 128, 255, CV_THRESH_BINARY);
 
 	cut_img = cut(img);//切下數字
 
@@ -116,9 +134,10 @@ int predict(Mat &image, Num_data data[], int train_data_count)
 
 	for (int i = 0; i < K_value; i++) {
 		P get_p = que.top();
+		int dis = get_p.first;
 		int num = get_p.second;
 		que.pop();
-		number[num] += 1;
+		number[num] += (K_value - i);	// We give every distances different weight.
 	}
 
 	int select_num;
@@ -150,4 +169,34 @@ long long int find_distance(Mat &img1, Mat &img2)
 		}
 	}
 	return distance;
+}
+
+void Test(Num_data data[], int train_data_count)
+{
+	Mat image;
+	int total = 0;
+	int error = 0;
+
+	for (int n = 0; n <= 9; n++) {
+		int count = 0;
+		int num_err = 0;
+		for (int i = 0; count != test_pictures_per_number; i++) {
+			char pathname[20] = {};
+			sprintf(pathname, "./test/%d_%d.jpg", n, i);
+			image = imread(pathname, 0);
+			if (image.data) {
+				total++;
+				count++;
+				image = process(image);
+				int predict_num = predict(image, data, train_data_count);
+				if (predict_num != n) {
+					error++;
+					num_err++;
+				}
+			}
+		}
+		printf("%d error times = %d\n", n, num_err);
+	}
+	printf("Total = %d error times = %d\n", total, error);
+	printf("Correct rate = %.4f\n", (1 - float(error) / total));
 }
