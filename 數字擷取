@@ -1,0 +1,85 @@
+#include "opencv2\opencv.hpp"
+#include <iostream>
+
+using namespace cv;
+using namespace std;
+
+int main()
+{
+	Mat img, gray_img, cut_img;
+
+	
+
+	img = imread("C:\\opencv\\testingpicture\\input\\test1.jpg", 1);
+
+	cvtColor(img, gray_img, COLOR_BGR2GRAY);
+
+	String windowName1 = "Jason1"; //Name of the window
+
+	namedWindow(windowName1, WINDOW_NORMAL); // Create a window
+
+	imshow(windowName1, gray_img);
+
+	waitKey(0);
+
+	int left , right;
+
+	int up, down;
+
+	bool x = true;
+
+	for (size_t nrow = 0; nrow < gray_img.rows; nrow++)
+	{
+		for (size_t ncol = 0; ncol < gray_img.cols; ncol++)
+		{
+			uchar val = gray_img.at<uchar>(nrow, ncol);
+			if ((val <200) && x == true) {
+				up = nrow;
+				left = ncol;
+				right = ncol;
+				x = false;
+			}
+			else if ((val < 200) && x == false) {
+				down = nrow;
+				if (ncol < left) {
+					left = ncol;
+				}else if(ncol > right) {
+					right = ncol;
+				}
+			}
+		}
+	}
+	cout << up << endl << down << endl << left <<endl << right;
+
+	waitKey(0);
+
+	Rect rect(left, up, right-left,down-up); //創一個矩形，(左上角x，左上角y，寬度，高度)
+
+	cut_img = Mat(gray_img, rect);      //從圖中切下指定範圍
+
+	Mat resize_img(1000,1000, cut_img.type());
+
+	resize(cut_img, resize_img, resize_img.size(), 0, 0, INTER_LINEAR);//縮放大小
+
+	String windowName2 = "cut"; //Name of the window
+
+	namedWindow(windowName2, WINDOW_NORMAL); // Create a window
+
+	imshow(windowName2, cut_img);
+
+	imwrite("C:\\opencv\\testingpicture\\output\\cut2.jpg", cut_img);
+
+	waitKey(0);
+
+	String windowName3 = "resize"; //Name of the window
+
+	namedWindow(windowName3, WINDOW_NORMAL); // Create a window
+
+	imshow(windowName3, resize_img);
+
+	imwrite("C:\\opencv\\testingpicture\\output\\cutresize.jpg", resize_img);
+
+	waitKey(0);
+
+	return 0;
+}
